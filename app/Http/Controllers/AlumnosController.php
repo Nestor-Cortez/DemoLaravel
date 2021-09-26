@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Alumno;
 use Illuminate\Http\Request;
 
 class AlumnosController extends Controller
@@ -13,7 +13,8 @@ class AlumnosController extends Controller
      */
     public function index()
     {
-       return 'Desde el metodo index del controlador';
+        $registros = Alumno::all();
+        return view('alumnos.index', compact('registros'));
     }
 
     /**
@@ -23,7 +24,7 @@ class AlumnosController extends Controller
      */
     public function create()
     {
-        return 'Transmitiendo en vivo Desde Crear';
+        return view('alumnos.create');
     }
 
     /**
@@ -34,7 +35,15 @@ class AlumnosController extends Controller
      */
     public function store(Request $request)
     {
-        return 'desde store';
+        $request->validate([
+            'nombres'=>'required',
+            'apellidos'=>'required',
+            'edad'=>'required',
+        ]);
+
+        Alumno::create($request->all());
+
+        return redirect()->route('alumnos.index')->with('success','Alumno creado exitosamente');
     }
 
     /**
@@ -43,9 +52,9 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Alumno $alumno)
     {
-        //
+        return view('alumnos.show', compact('alumno'));
     }
 
     /**
@@ -54,9 +63,9 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Alumno $alumno)
     {
-       return 'Desde Editar';
+       return view('alumnos.edit', compact('alumno'));
     }
 
     /**
@@ -66,9 +75,17 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Alumno $alumno)
     {
-        //
+        $request->validate([
+            'nombres'=>'required',
+            'apellidos'=>'required',
+            'edad'=>'required',
+
+        ]);
+        $alumno->update($request->all());
+
+        return redirect()->route('alumnos.index')->with('success','Alumno Actualizado Exitosamente');
     }
 
     /**
@@ -77,8 +94,9 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Alumno $alumno)
     {
-        //
+      $alumno->delete();
+      return redirect()->route('alumnos.index')->with('success','Alumno Eliminado Exitosamente');
     }
 }
